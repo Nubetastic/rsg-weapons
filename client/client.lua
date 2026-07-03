@@ -149,23 +149,15 @@ RegisterNetEvent('rsg-weapons:client:UseWeapon', function(weaponData)
 
             if weaponName == 'weapon_bow' or weaponName == 'weapon_bow_improved' then
                 GiveWeaponToPed(cache.ped, hash, 0, false, true)
-                SetCurrentPedWeapon(cache.ped,hash,true)
-            end
-
-            if isWeaponAGun and isWeaponOneHanded then
+                SetCurrentPedWeapon(cache.ped, hash, true)
+            elseif isWeaponAGun and isWeaponOneHanded then
                 addWardrobeInventoryItem("CLOTHING_ITEM_M_OFFHAND_000_TINT_004", 0xF20B6B4A)
                 addWardrobeInventoryItem("UPGRADE_OFFHAND_HOLSTER", 0x39E57B01)
-                if WeaponAPI.used2 then
-                    WeaponAPI.EquipWeapon(weaponName, 1, wepSerial, hash)
-                else
-                    WeaponAPI.EquipWeapon(weaponName, 0, wepSerial, hash)
-                end
+                WeaponAPI.EquipWeapon(weaponName, 1, wepSerial, hash)
             else
                 GiveWeaponToPed(cache.ped, hash, 0, false, true)
-                SetCurrentPedWeapon(cache.ped,hash,true)
+                SetCurrentPedWeapon(cache.ped, hash, true)
             end
-
-            SetAmmoInClip(cache.ped, hash, 0)
 
             if Config.Debug then
                 print("Weapon Serial: "..wepSerial)
@@ -211,7 +203,7 @@ RegisterNetEvent('rsg-weapons:client:UseWeapon', function(weaponData)
         TriggerEvent('rsg-weapons:client:brokenweapon', wepSerial)
 
         if Config.WeaponComponents then -- false need /loadweapon load
-            TriggerServerEvent("rsg-weaponcomp:server:removeComponents", "DEFUALT", weaponName, wepSerial)
+            TriggerServerEvent("rsg-weaponcomp:server:removeComponents", "DEFAULT", weaponName, wepSerial)
             Wait(0)
             TriggerServerEvent('rsg-weaponcomp:server:check_comps')
         end
@@ -281,7 +273,7 @@ end)
 ------------------------------------------
 CreateThread(function()
     while true do
-        Wait(1)
+        Wait(100)
         if IsPedShooting(cache.ped) then
             local heldWeapon = Citizen.InvokeNative(0x8425C5F057012DAB, cache.ped) -- GetPedCurrentHeldWeapon(
             local serialHeld = weaponInHands[heldWeapon]
@@ -362,7 +354,6 @@ RegisterNetEvent('rsg-weapons:client:repairweapon', function()
             },
             label = locale('cl_repairing_weapon'),
         })
-        TriggerServerEvent('rsg-weapons:server:removeitem', 'weapon_repair_kit', 1)
         TriggerServerEvent('rsg-weapons:server:repairweapon', currentSerial)
         LocalPlayer.state:set("inv_busy", false, true) -- unlock inventory
     else
@@ -410,7 +401,6 @@ RegisterNetEvent('rsg-weapons:client:repairbrokenweapon', function(serial)
             },
             label = locale('cl_repairing_weapon'),
         })
-        TriggerServerEvent('rsg-weapons:server:removeitem', 'weapon_repair_kit', 1)
         TriggerServerEvent('rsg-weapons:server:repairweapon', serial)
         LocalPlayer.state:set("inv_busy", false, true) -- unlock inventory
     else
