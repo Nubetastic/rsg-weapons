@@ -131,3 +131,7 @@ Apply them if you plan to persist weapon information as designed by this resourc
 - **RSG / Rexshack-RedM** — framework integration & localization support  
 - Community translators  
 - License: GPL‑3.0
+
+
+Modified from https://github.com/Rexshack-RedM/rsg-weapons, Aug 2025.
+See the Git history for changes. Distributed under GNU GPLv3.
