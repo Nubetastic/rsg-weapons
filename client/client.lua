@@ -491,6 +491,44 @@ RegisterNetEvent('RSGCore:Client:OnPlayerLoaded', function()
 end)
 
 ------------------------------------------
+-- Equip all weapons event trigger
+------------------------------------------
+RegisterNetEvent('RSGCore:Client:EquipAllWeapons', function()
+    if not Config.SaveEquippedWeapons then return end
+    CreateThread(function()
+        while not RSGCore.Functions.GetPlayerData().citizenid or not RSGCore.Functions.GetPlayerData().items do
+            Wait(100)
+        end
+        Wait(5000)
+        RSGCore.Functions.TriggerCallback('rsg-weapons:server:getEquippedWeapons', function(equippedWeapons)
+            if equippedWeapons and next(equippedWeapons) ~= nil then
+                for serial, _ in pairs(equippedWeapons) do
+                    RSGCore.Functions.TriggerCallback('rsg-weapons:server:getWeaponBySerial', function(weaponData)
+                        if weaponData and weaponData.info and weaponData.info.quality > 1 then
+                            Wait(500)
+                            TriggerEvent('rsg-weapons:client:UseWeapon', weaponData)
+                        end
+                    end, serial)
+                    Wait(1000)
+                end
+            end
+        end)
+        RSGCore.Functions.TriggerCallback('rsg-weapons:server:getEquippedKnives', function(equippedKnives)
+            if equippedKnives and next(equippedKnives) ~= nil then
+                for knifeName, _ in pairs(equippedKnives) do
+                    Wait(500)
+                    local fakeWeaponData = { name = knifeName, info = {} }
+                    TriggerEvent('rsg-weapons:client:UseEquipment', fakeWeaponData)
+                    Wait(1000)
+                end
+            end
+        end)
+        Wait(3000)
+        Citizen.InvokeNative(0x94A3C1B804D291EC, cache.ped, false, false, false, true)
+    end)
+end)
+
+------------------------------------------
 -- cleanup on resource stop
 ------------------------------------------
 AddEventHandler('onResourceStop', function(name)
